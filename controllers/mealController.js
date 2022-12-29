@@ -31,29 +31,6 @@ exports.PostNewMeal = async (req, res) => {
 };
 
 exports.PutUpdateMeal = (req, res) => {
-	// const mealId = req.params._id;
-	// const newName = req.body.meal_name;
-	// const newPreperingTime = req.body.prepering_time;
-	// const newIngredients = req.body.ingredients;
-
-	// if (!mealId) {
-	// 	res.json({
-	// 		message: 'Please add ID of meal you want to update',
-	// 	});
-	// }
-
-	// const meal = Meal.findOne({ _id: mealId });
-
-	// if (!meal) {
-	// 	res.json({
-	// 		message: `There is no meal with ID ${mealId}`,
-	// 	});
-	// }
-
-	// if (newName) Meal.findOneAndUpdate({ _id: mealId }, { meal_name: newName });
-	// if (newPreperingTime) Meal.findOneAndUpdate({ _id: mealId }, { prepering_time: newPreperingTime });
-	// if (newIngredients) Meal.findOneAndUpdate({ _id: mealId }, { ingredients: newIngredients });
-
 	res.json({
 		message: 'Update',
 	});
