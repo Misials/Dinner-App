@@ -30,15 +30,36 @@ exports.PostNewMeal = async (req, res) => {
 	});
 };
 
-exports.PutUpdateMeal = (req, res) => {
+exports.PutUpdateMeal = async (req, res) => {
+	const mealId = req.params._id;
+
+	if (!mealId) res.json({ message: 'Please send ID to update meal' });
+
+	const mealUpdated = await Meal.findByIdAndUpdate(mealId, req.body, {
+		new: true,
+		runValidators: true,
+	});
+
+	if (!mealUpdated) res.json({ message: `Cannot find meal with id ${mealId}` });
+
 	res.json({
-		message: 'Update',
+		message: 'Updated',
+		mealUpdated,
 	});
 };
 
-exports.DeleteMeal = (req, res) => {
+exports.DeleteMeal = async (req, res) => {
+	const mealId = req.params._id;
+
+	if (!mealId) res.json({ message: 'Please send ID to delete meal' });
+
+	const deletedMeal = await Meal.findOneAndDelete(mealId);
+
+	if (!deletedMeal) res.json({ message: `Cannot find meal with id ${mealId}` });
+
 	res.json({
-		message: `Delete Meal ${req.params._id}`,
+		message: `Deleted Meal!`,
+		deletedMeal,
 	});
 };
 
@@ -47,7 +68,7 @@ exports.GetMeal = async (req, res) => {
 
 	if (!mealId) res.json({ message: 'Please add ID' });
 
-	const meal = Meal.findById(mealId);
+	const meal = await Meal.findById(mealId);
 
 	if (!meal) res.json({ message: `There is no meal with id ${mealId}` });
 
