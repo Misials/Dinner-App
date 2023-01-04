@@ -1,80 +1,64 @@
-const mongoose = require('mongoose');
-
 const Meal = require('../models/mealModel');
 
-exports.GetAllMeals = async (req, res) => {
+exports.getAllMeals = async (req, res) => {
 	const allMeals = await Meal.find();
+	if (!allMeals) return res.status(204).json({ message: 'No meals found.' });
+	res.json({ allMeals });
+};
 
-	if (!allMeals) {
-		res.json({
-			message: 'No meals!',
-		});
+exports.postNewMeal = async (req, res) => {
+	if (!req?.body?.meal_name || !req?.body?.prepering_time) {
+		return res.status(400).json({ message: 'Meal name and prepering time are required!' });
 	}
 
-	res.json({
-		allMeals,
-	});
+	try {
+		const newMeal = await Meal.create({
+			meal_name: req.body.meal_name,
+			prepering_time: req.body.prepering_time,
+			ingredients: req?.body?.ingredients,
+		});
+
+		res.status(201).json({ message: 'Created successfully', newMeal });
+	} catch (err) {
+		console.log(err);
+	}
 };
 
-exports.PostNewMeal = async (req, res) => {
-	const newMeal = {
-		meal_name: req.body.meal_name,
-		prepering_time: req.body.prepering_time,
-		ingredients: req.body.ingredients,
-	};
+exports.updateMeal = async (req, res) => {
+	if (!req?.params?._id) {
+		return res.status(400).json({ message: 'ID parameter is required!' });
+	}
 
-	await Meal.create(newMeal);
-
-	res.json({
-		newMeal,
-	});
-};
-
-exports.PutUpdateMeal = async (req, res) => {
-	const mealId = req.params._id;
-
-	if (!mealId) res.json({ message: 'Please send ID to update meal' });
-
-	const mealUpdated = await Meal.findByIdAndUpdate(mealId, req.body, {
+	const meal = await Meal.findByIdAndUpdate(req.params._id, req.body, {
 		new: true,
 		runValidators: true,
 	});
 
-	if (!mealUpdated) res.json({ message: `Cannot find meal with id ${mealId}` });
+	if (!meal) return res.status(204).json({ message: `There is no meal with id ${req.params._id}` });
 
-	res.json({
-		message: 'Updated',
-		mealUpdated,
-	});
+	res.status(200).json({ message: 'Updated successfully', meal });
 };
 
-exports.DeleteMeal = async (req, res) => {
-	const mealId = req.params._id;
+exports.deleteMeal = async (req, res) => {
+	if (!req?.params?._id) {
+		return res.status(400).json({ message: 'ID parameter is required!' });
+	}
 
-	if (!mealId) res.json({ message: 'Please send ID to delete meal' });
+	const meal = await Meal.findByIdAndDelete(req.params._id);
 
-	const deletedMeal = await Meal.findOneAndDelete(mealId);
+	if (!meal) return res.status(204).json({ message: `There is no meal with id ${req.params._id}` });
 
-	if (!deletedMeal) res.json({ message: `Cannot find meal with id ${mealId}` });
-
-	res.json({
-		message: `Deleted Meal!`,
-		deletedMeal,
-	});
+	res.status(200).json({ message: 'Deleted successfully', meal });
 };
 
-exports.GetMeal = async (req, res) => {
-	const mealId = req.params._id;
+exports.getMeal = async (req, res) => {
+	if (!req?.params?._id) {
+		return res.status(400).json({ message: 'ID parameter is required!' });
+	}
 
-	if (!mealId) res.json({ message: 'Please add ID' });
+	const meal = await Meal.findById(req.params._id);
 
-	const meal = await Meal.findById(mealId);
+	if (!meal) return res.status(204).json({ message: `There is no meal with id ${req.params._id}` });
 
-	if (!meal) res.json({ message: `There is no meal with id ${mealId}` });
-
-	console.log(meal);
-
-	res.json({
-		meal,
-	});
+	res.status(200).json({ meal });
 };
