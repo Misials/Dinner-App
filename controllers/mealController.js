@@ -1,5 +1,7 @@
 const Meal = require('../models/mealModel');
 
+const { random } = require('../utils/random');
+
 exports.getAllMeals = async (req, res) => {
 	const allMeals = await Meal.find();
 	if (!allMeals) return res.status(204).json({ message: 'No meals found.' });
@@ -61,4 +63,17 @@ exports.getMeal = async (req, res) => {
 	if (!meal) return res.status(204).json({ message: `There is no meal with id ${req.params._id}` });
 
 	res.status(200).json({ meal });
+};
+
+exports.getRandomMeal = async (req, res) => {
+	const meals = await Meal.find();
+
+	if (!meals) return res.status(204).json({ message: 'There is no meals in databases' });
+
+	const randomMeal = random(meals);
+
+	res.status(200).json({
+		message: 'The meal was successfully drawn',
+		meal: randomMeal,
+	});
 };
